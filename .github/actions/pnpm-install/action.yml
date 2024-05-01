@@ -1,0 +1,61 @@
+# "pnpm install" composite action for pnpm 8+
+
+name: pnpm install
+description: "Run pnpm install with cache enabled"
+
+inputs:
+  enable-corepack:
+    description: "Enable corepack"
+    required: false
+    default: "false"
+  cwd:
+    description: "Changes node's process.cwd() if the project is not located on the root. Default to process.cwd()"
+    required: false
+    default: "."
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Enable Corepack
+      if: ${{ inputs.enable-corepack == 'true' }}
+      shell: bash
+      working-directory: ${{ inputs.cwd }}
+      run: |
+        corepack enable
+        echo "corepack enabled"
+
+    - uses: pnpm/action-setup@v2.2.4
+      if: ${{ inputs.enable-corepack == 'false' }}
+      with:
+        run_install: false
+        version: 8
+
+    - name: Expose pnpm config
+      id: pnpm-config
+      shell: bash
+      run: |
+        echo "STORE=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+    - name: Cache rotation keys
+      id: cache-rotation
+      shell: bash
+      run: |
+        echo "YEAR_MONTH=$(/bin/date -u "+%Y%m")" >> $GITHUB_OUTPUT
+
+    - uses: actions/cache@v3
+      name: Setup pnpm cache
+      with:
+        path: |
+          ${{ github.workspace }}/.next/cache
+          ${{ steps.pnpm-config.outputs.STORE }}
+        key: ${{ runner.os }}-pnpm-store-cache-${{ steps.cache-rotation.outputs.YEAR_MONTH }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-cache-${{ steps.cache-rotation.outputs.YEAR_MONTH }}-
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.cwd }}
+      run: pnpm install --frozen-lockfile --prefer-offline
+      env:
+        HUSKY: "0" # By default do not run HUSKY install

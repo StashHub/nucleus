@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Member" ALTER COLUMN "name" DROP NOT NULL,
+ALTER COLUMN "relationship" DROP NOT NULL,
+ALTER COLUMN "payroll" DROP NOT NULL;

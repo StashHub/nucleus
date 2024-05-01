@@ -1,0 +1,30 @@
+.trigger:before,
+.trigger:after {
+  content: "";
+  width: 1rem;
+  height: 1rem;
+  border-top-left-radius: 0.5rem;
+  border-left: 1px solid theme(colors.neutral.200);
+  border-top: 1px solid theme(colors.neutral.200);
+  bottom: 0;
+  position: absolute;
+  box-shadow: -0.25rem -0.25rem 0 0 white;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+}
+
+.trigger:before {
+  left: -1rem;
+  transform: rotate(180deg);
+}
+
+.trigger:after {
+  right: -1rem;
+  transform: rotate(-90deg);
+}
+
+.trigger[data-state="active"]:before,
+.trigger[data-state="active"]:after {
+  opacity: 1;
+}

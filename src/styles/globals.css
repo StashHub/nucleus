@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background-main: #f8f9fb;
+    --text-primary: #040506;
+    --text-secondary: #343C46;
+    --purple: #5514e6;
+    --purple-100: #ddd0fa;
+    --purple-200: #bba1f5;
+    --purple-300: #9972f0;
+    --purple-400: #7743eb;
+    --purple-600: #4410b8;
+    --neutral-100: #eff1f5;
+    --neutral-200: #cfd4de;
+    --neutral-300: #c3c9d5;
+    --neutral-400: #999fad;
+    --neutral-500: #787e8c;
+    --neutral-600: #575c66;
+    --negative-100: #fcc;
+    --negative-200: #faa99e;
+    --negative-600: #c2200a;
+    --success-50: #eafbeb;
+    --success-100: #cff7d3;
+    --success-300: #7ee789;
+    --success-600: #1b9827;
+    --success-700: #14751e;
+    --success-800: #0d4a13;
+    --success-900: #07270a;
+    --notice-50: #fff3e6;
+    --notice-100: #ffe7cc;
+    --notice-300: #ffb866;
+    --notice-600: #cc6d00;
+    --info-50: #e9eeff;
+    --info-100: #d2ddff;
+    --info-300: #799aff;
+    --info-500: #4c79ff;
+    --info-600: #1946cc;
+    --info-700: #133499;
+    --info-800: #0c2366;
+
+    --tw-ring-color: #5514e6;
+    /* add other primitives */
+  }
+
+  .dark {
+    --background-main: #121212;
+    --text-primary: #f8f9fb;
+    --purple: #5514e6;
+    --neutral-600: #575c66;
+    /* add other primitives */
+  }
+}
+
+html {
+  background: var(--background-main);
+}
+
+html,
+body {
+  font-size: 16px; /* base font size */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100vw;
+  height: 100vh;
+}
+
+#__next {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+a {
+  color: theme("colors.purple.400");
+}
+a:focus-visible {
+  outline: 2px solid theme("colors.purple.300");
+  border-radius: 0.125rem;
+}
+
+p {
+  margin-bottom: 1.25rem;
+}
+
+label {
+  @apply mb-1 font-semibold text-primaryText;
+}
+
+svg {
+  max-width: 100%;
+}
+
+*:disabled {
+  cursor: not-allowed;
+}
+
+@layer utilities {
+  .blurple-500 {
+    @apply bg-gradient-to-tr from-[#285BF2] to-[#CD29FF];
+  }
+
+  .gradient-neutral-to-trans {
+    background: linear-gradient(
+      0deg,
+      rgba(248, 249, 251, 0) 0%,
+      theme(colors.backgroundMain) 100%
+    );
+  }
+
+  .box-shadow-sm {
+    box-shadow:
+      0px 1px 2px -1px rgba(12, 35, 102, 0.1),
+      0px 1px 3px 0px rgba(12, 35, 102, 0.1);
+  }
+
+  .box-shadow-md {
+    box-shadow:
+      0px 2px 6px -3px rgba(12, 35, 102, 0.1),
+      0px 1px 5px 1px rgba(12, 35, 102, 0.1);
+  }
+
+  .focus-visible-anchor {
+    @apply focus-visible:border-b-2 focus-visible:border-purple-300 focus-visible:outline-none;
+  }
+}

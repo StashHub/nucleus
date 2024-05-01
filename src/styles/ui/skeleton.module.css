@@ -1,0 +1,20 @@
+@tailwind components;
+
+@layer components {
+  .skeleton {
+    background: linear-gradient(
+      110deg,
+      var(--neutral-200) 15%,
+      var(--neutral-100) 50%,
+      var(--neutral-200) 75%
+    );
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+  }
+
+  @keyframes shine {
+    to {
+      background-position-x: -200%;
+    }
+  }
+}

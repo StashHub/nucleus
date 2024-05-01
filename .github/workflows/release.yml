@@ -1,0 +1,79 @@
+name: Release
+run-name: Release v${{ inputs.tag }}-${{ inputs.environment }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag (x.y.z)"
+        required: true
+      environment:
+        type: environment
+        description: "Environment"
+        default: "dev"
+      project:
+        description: "Project source"
+        required: true
+
+jobs:
+  build:
+    environment: ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    name: Build Image
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@master
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2.0.1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          TAG: ${{ github.event.inputs.tag }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . \
+            --build-arg NEXT_PUBLIC_SEGMENT_WRITE_KEY=${{ secrets.NEXT_PUBLIC_SEGMENT_WRITE_KEY }}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+  helm:
+    runs-on: ubuntu-latest
+    name: Update Helm
+    needs: build
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Update Values
+        env:
+          OWNER: "InnovationRefunds"
+          REPO: "apps-helm-charts"
+          ENVIRONMENT: ${{ github.event.inputs.environment }}
+          PROJECT: ${{ github.event.inputs.project }}
+          TAG: ${{ github.event.inputs.tag }}
+        run: |
+          curl --fail \
+            -H "Authorization: token ${{ secrets.API_GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$OWNER/$REPO/dispatches" \
+            -d '{
+              "event_type": "update-helm-values",
+              "client_payload": {
+                "tag": "'"${TAG}"'",
+                "env": "'"${ENVIRONMENT}"'",
+                "project": "'"${PROJECT}"'"
+              }
+            }'

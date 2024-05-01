@@ -1,0 +1,20 @@
+"👨‍💻 frontend":
+  - any: ["src/pages/**"]
+
+"📦 backend":
+  - any: ["src/server/**"]
+
+"🎨 styles":
+  - any: ["src/styles/**"]
+
+"📚 documentation":
+  - any: ["**/*.md", "**/docs/**"]
+
+"🌀 workflows":
+  - any: [".github/workflows/**"]
+
+"🛠️ api":
+  - any: ["src/pages/api/**"]
+
+"🔧 configuration":
+  - any: ["**/config/**", "."]
